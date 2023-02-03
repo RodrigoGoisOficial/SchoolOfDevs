@@ -45,10 +45,10 @@ namespace SchoolOfDevs.Services
                 .AsNoTracking()
                 .SingleOrDefaultAsync(result => result.UserName == user.UserName);
 
-            if (userDb == null)
+            if (userDb is not null)
                 throw new Exception($"UserName {user.UserName} already exist.");
 
-            _context.Users.Add(userDb);
+            _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
             return user;
