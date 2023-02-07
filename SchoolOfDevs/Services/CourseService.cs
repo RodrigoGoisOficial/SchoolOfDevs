@@ -53,6 +53,7 @@ namespace SchoolOfDevs.Services
                 throw new Exception("Route id differs Course id");
 
             Course courseDb = await _context.Courses
+                .AsNoTracking()
                 .SingleOrDefaultAsync(result => result.Id == id);
 
             if (courseDb == null)

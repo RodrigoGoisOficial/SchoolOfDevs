@@ -53,6 +53,7 @@ namespace SchoolOfDevs.Services
                 throw new Exception("Route id differs Note id");
 
             Note noteDb = await _context.Notes
+                .AsNoTracking()
                 .SingleOrDefaultAsync(result => result.Id == id);
 
             if (noteDb == null)
