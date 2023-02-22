@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using SchoolOfDevs.Dto.Note;
 using SchoolOfDevs.Entities;
 using SchoolOfDevs.Exceptions;
 using SchoolOfDevs.Helpers;
@@ -7,10 +9,10 @@ namespace SchoolOfDevs.Services
 {
     public interface INoteService
     {
-        public Task<List<Note>> GetAll();
-        public Task<Note> GetById(int id);
-        public Task<Note> Create(Note note);
-        public Task Update(Note noteIn, int id);
+        public Task<List<NoteResponse>> GetAll();
+        public Task<NoteResponse> GetById(int id);
+        public Task<NoteResponse> Create(NoteRequest user);
+        public Task Update(NoteRequest noteIn, int id);
         public Task Delete(int id);
 
     }
@@ -18,18 +20,22 @@ namespace SchoolOfDevs.Services
     public class NoteService : INoteService
     {
         private readonly DataContext _context;
+        private readonly IMapper _mapper;
 
         public NoteService(DataContext context)
         {
             _context = context;
         }
 
-        public async Task<List<Note>> GetAll()
+        public async Task<List<NoteResponse>> GetAll()
         {
-            return await _context.Notes.ToListAsync();
+            List<Note> notes = await _context.Notes.ToListAsync();
+            
+            return notes.Select(n => _mapper.Map<NoteResponse>(n)).ToList();
+
         }
 
-        public async Task<Note> GetById(int id)
+        public async Task<NoteResponse> GetById(int id)
         {
             Note noteDb = await _context.Notes
                 .SingleOrDefaultAsync(result => result.Id == id);
@@ -37,20 +43,22 @@ namespace SchoolOfDevs.Services
             if (noteDb == null)
                 throw new KeyNotFoundException($"User {id} not found.");
 
-            return noteDb;
+            return _mapper.Map<NoteResponse>(noteDb);
         }
 
-        public async Task<Note> Create(Note note)
+        public async Task<NoteResponse> Create(NoteRequest noteRequest)
         {
+            Note note = _mapper.Map<Note>(noteRequest);
+
             _context.Notes.Add(note);
             await _context.SaveChangesAsync();
 
-            return note;
+            return _mapper.Map<NoteResponse>(noteRequest);
         }
 
-        public async Task Update(Note noteIn, int id)
+        public async Task Update(NoteRequest noteRequest, int id)
         {
-            if (noteIn.Id != id)
+            if (noteRequest.Id != id)
                 throw new BadRequestException("Route id differs Note id");
 
             Note noteDb = await _context.Notes
@@ -60,9 +68,9 @@ namespace SchoolOfDevs.Services
             if (noteDb == null)
                 throw new KeyNotFoundException($"Note {id} not found.");
 
-            noteIn.CreatedAt = noteDb.CreatedAt;
+            noteDb = _mapper.Map<Note>(noteRequest);
 
-            _context.Entry(noteIn).State = EntityState.Modified;
+            _context.Entry(noteDb).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
 
