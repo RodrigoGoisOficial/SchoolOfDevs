@@ -38,6 +38,7 @@ namespace SchoolOfDevs.Services
         public async Task<CourseResponse> GetById(int id)
         {
             Course courseDb = await _context.Courses
+                .Include(c => c.Teacher)
                 .SingleOrDefaultAsync(result => result.Id == id);
 
             if (courseDb == null)

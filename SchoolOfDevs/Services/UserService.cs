@@ -107,7 +107,7 @@ namespace SchoolOfDevs.Services
 
             userDb.Password = BC.HashPassword(userRequest.Password);
 
-            _context.Entry(userRequest).State = EntityState.Modified;
+            _context.Entry(userDb).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
 
@@ -126,26 +126,26 @@ namespace SchoolOfDevs.Services
 
         private async Task AddOrRemoveCourse(User userDb, int[] coursesIds)
         {
-            int[] removeIds = userDb.CoursesStuding.Where(e =>
-            !coursesIds.Contains(e.Id))
+            int[] removedIds = userDb.CoursesStuding.Where(e =>
+                !coursesIds.Contains(e.Id))
                 .Select(e => e.Id).ToArray();
             int[] addedIds = coursesIds
                 .Where(e => !userDb.CoursesStuding.Select(u => u.Id).ToArray().Contains(e))
                 .ToArray();
 
-            if (!removeIds.Any() && !addedIds.Any())
+            if (!removedIds.Any() && !addedIds.Any())
             {
                 _context.Entry(userDb).State = EntityState.Detached;
                 return;
             }
 
             List<Course> tempCourse = await _context.Courses
-                .Where(e => removeIds.Contains(e.Id) || addedIds.Contains(e.Id))
+                .Where(e => removedIds.Contains(e.Id) || addedIds.Contains(e.Id))
                 .ToListAsync();
 
-            List<Course> coursesToRemoved = tempCourse.Where(e => removeIds.Contains(e.Id)).ToList();
-            foreach (Course course in coursesToRemoved) 
-                userDb.CoursesStuding.Add(course);
+            List<Course> coursesToBeRemoved = tempCourse.Where(e => removedIds.Contains(e.Id)).ToList();
+            foreach (Course course in coursesToBeRemoved)
+                userDb.CoursesStuding.Remove(course);
 
             List<Course> coursesToBeAdded = tempCourse.Where(e => addedIds.Contains(e.Id)).ToList();
             foreach (Course course in coursesToBeAdded)
@@ -153,7 +153,6 @@ namespace SchoolOfDevs.Services
 
             await _context.SaveChangesAsync();
             _context.Entry(userDb).State = EntityState.Detached;
-
         }
     }
 }

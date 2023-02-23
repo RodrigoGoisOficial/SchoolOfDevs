@@ -8,11 +8,11 @@ namespace SchoolOfDevs.Profiles
     {
         public CourseProfile()
         {
-            CreateMap<Note, CourseRequest>();
-            CreateMap<Note, CourseResponse>();
+            CreateMap<Course, CourseRequest>();
+            CreateMap<Course, CourseResponse>();
 
-            CreateMap<CourseRequest, Note>();
-            CreateMap<CourseResponse, Note>();
+            CreateMap<CourseRequest, Course>();
+            CreateMap<CourseResponse, Course>();
         }
     }
 }

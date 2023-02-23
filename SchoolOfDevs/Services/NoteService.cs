@@ -22,9 +22,10 @@ namespace SchoolOfDevs.Services
         private readonly DataContext _context;
         private readonly IMapper _mapper;
 
-        public NoteService(DataContext context)
+        public NoteService(DataContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<List<NoteResponse>> GetAll()
@@ -53,7 +54,7 @@ namespace SchoolOfDevs.Services
             _context.Notes.Add(note);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<NoteResponse>(noteRequest);
+            return _mapper.Map<NoteResponse>(note);
         }
 
         public async Task Update(NoteRequest noteRequest, int id)
