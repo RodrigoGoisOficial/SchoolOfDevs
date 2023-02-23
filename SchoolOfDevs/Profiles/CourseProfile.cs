@@ -10,6 +10,9 @@ namespace SchoolOfDevs.Profiles
         {
             CreateMap<Note, CourseRequest>();
             CreateMap<Note, CourseResponse>();
+
+            CreateMap<CourseRequest, Note>();
+            CreateMap<CourseResponse, Note>();
         }
     }
 }
