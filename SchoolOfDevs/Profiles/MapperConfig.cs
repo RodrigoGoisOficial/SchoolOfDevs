@@ -10,6 +10,7 @@ namespace SchoolOfDevs.Profiles
             {
                 mc.AddProfile(new UserProfile());
                 mc.AddProfile(new NoteProfile());
+                mc.AddProfile(new CourseProfile());
             });
         }
     }
