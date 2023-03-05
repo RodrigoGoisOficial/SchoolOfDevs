@@ -17,12 +17,12 @@ namespace SchoolOfDevs.Authorization
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var allowAnonymous = context.ActionDescriptor.EndpointMetadata.OfType<AllowAnonymousAttribute>();
-            if (allowAnonymous != null)
+            var allowAnonymous = context.ActionDescriptor.EndpointMetadata.OfType<AllowAnonymousAttribute>().Any();
+            if (allowAnonymous)
                 return;
 
-            var user = (UserResponse)context.HttpContext.Items["user"];
-            if (user != null || (_roles.Any() && !_roles.Contains(user.TypeUser)))
+            var user = (UserResponse)context.HttpContext.Items["User"];
+            if (user == null || (_roles.Any() && !_roles.Contains(user.TypeUser)))
             {
                 context.Result = new JsonResult(new { message = "Unauthorized" })
                 {

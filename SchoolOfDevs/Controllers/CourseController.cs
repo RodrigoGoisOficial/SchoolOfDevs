@@ -19,23 +19,15 @@ namespace SchoolOfDevs.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            return Ok(await _service.GetAll());
-        }
+        public async Task<IActionResult> GetAll() => Ok(await _service.GetAll());
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            return Ok(await _service.GetById(id));
-        }
+        public async Task<IActionResult> GetById(int id) => Ok(await _service.GetById(id));
 
         [Authorize(TypeUser.Teacher, TypeUser.Both)]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CourseRequest course)
-        {
-            return Ok(await _service.Create(course));
-        }
+        public async Task<IActionResult> Create([FromBody] CourseRequest course) =>
+            Ok(await _service.Create(course));
 
         [Authorize(TypeUser.Teacher, TypeUser.Both)]
         [HttpPut("{id}")]

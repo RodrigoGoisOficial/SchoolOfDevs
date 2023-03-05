@@ -18,30 +18,20 @@ namespace SchoolOfDevs.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            return Ok(await _service.GetAll());
-        }
+        public async Task<IActionResult> GetAll() => Ok(await _service.GetAll());
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            return Ok(await _service.GetById(id));
-        }
+        public async Task<IActionResult> GetById(int id) => Ok(await _service.GetById(id));
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] UserRequest user)
-        {
-            return Ok(await _service.Create(user));
-        }
+        public async Task<IActionResult> Create([FromBody] UserRequest user) =>
+            Ok(await _service.Create(user));
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest request)
-        {
-            return Ok(await _service.Authenticate(request));
-        }
+        public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest request) =>
+            Ok(await _service.Authenticate(request));
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromBody] UserRequestUpdate userIn, int id)

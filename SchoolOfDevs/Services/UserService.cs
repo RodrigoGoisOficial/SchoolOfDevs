@@ -25,12 +25,14 @@ namespace SchoolOfDevs.Services
         private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly IJwtService _jwtService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(DataContext context, IMapper mapper, IJwtService jwtService)
+        public UserService(DataContext context, IMapper mapper, IJwtService jwtService, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
             _jwtService = jwtService;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest request)
         {
@@ -104,6 +106,7 @@ namespace SchoolOfDevs.Services
 
         public async Task Update(UserRequestUpdate userRequest, int id)
         {
+
             if (userRequest.Id != id)
                 throw new BadRequestException("Route id differs User id");
             else if (!userRequest.Password.Equals(userRequest.ConfirmPassword))
@@ -112,9 +115,12 @@ namespace SchoolOfDevs.Services
             User userDb = await _context.Users
                 .Include(e => e.CoursesStuding)
                 .SingleOrDefaultAsync(result => result.Id == id);
+            UserResponse currentUser = (UserResponse)_httpContextAccessor?.HttpContext?.Items["User"];
 
             if (userDb is null)
                 throw new KeyNotFoundException($"User {id} not found.");
+            else if (currentUser?.Id != userDb.Id)
+                throw new ForbiddenException("Forbbiden");
             else if (!BC.Verify(userRequest.CurrentPassword, userDb.Password))
                 throw new BadRequestException("Incorrect Password");
 
@@ -134,8 +140,12 @@ namespace SchoolOfDevs.Services
                 .AsNoTracking()
                 .SingleOrDefaultAsync(result => result.Id == id);
 
+            UserResponse currentUser = (UserResponse)_httpContextAccessor?.HttpContext?.Items["User"];
+
             if (userDb == null)
                 throw new KeyNotFoundException($"User {id} not found.");
+            else if (currentUser?.Id != userDb.Id)
+                throw new ForbiddenException("Forbbiden");
 
             _context.Users.Remove(userDb);
             await _context.SaveChangesAsync();

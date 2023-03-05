@@ -10,11 +10,11 @@ namespace SchoolOfDevs.Middleware
             _next = next;
         }
 
-        public async void Invoke(HttpContext context, IUserService userService, IJwtService jwtService)
+        public async Task Invoke(HttpContext context, IUserService userService, IJwtService jwtService)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             var userId = jwtService.ValidateJwtToken(token);
-            if (userId == null)
+            if (userId != null)
                 context.Items["User"] = await userService.GetById(userId.Value);
 
             await _next(context);
