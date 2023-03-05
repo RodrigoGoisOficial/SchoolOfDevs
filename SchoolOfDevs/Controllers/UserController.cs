@@ -33,6 +33,12 @@ namespace SchoolOfDevs.Controllers
             return Ok(await _service.Create(user));
         }
 
+        [HttpPost("authenticate")]
+        public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest request)
+        {
+            return Ok(await _service.Authenticate(request));
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromBody] UserRequestUpdate userIn, int id)
         {
